@@ -53,22 +53,32 @@ for(i in seq(nGenes)){   #For each gene
   anova2way_data$ANOVAP[i] <-  d_anova$`Pr(>F)`[1]
 }
 
+#######
+
+##Correcting the p-values with BH (fdr) method
+#library(qvalue)
+  param <- names(anova2way_data)
+  p <- anova2way_data[,3]
+  p_fdr <- p.adjust(p, method = "fdr")
+  #p_fdr<-qvalue(anova2way_data$ANOVAP)
+  #Storing the corrected p-value back in the ANOVA object, in a new column
+  colN<-length(anova2way_data)+1
+  anova2way_data[,colN]<-p_fdr
+  names(anova2way_data)[colN]<-paste0(param,"FDR")
+
+  #anova2way_data$GeneNamesFDR<0.02
+##CHOSE
+
+  re1 = anova2way_data %>% filter(GeneNamesFDR>0.02)
+  head(re1)
+  ##3231
+  ##BUT the author is 3280
+
+  
 
 
-###Qvalue
 
-library(qvalue)
-pvalues <- anova2way_data$ANOVAP
 
-#Checking the p-value histogram
-#hist(hedenfalk$p, nclass = 20)
-hist(anova2way_data$ANOVAP,nclass = 20)
 
-qobj <- qvalue(p = pvalues)
-names(qobj)
-summary(qobj)
-hist(qobj)
-plot(qobj)
 
-qvalues <- qobj$qvalues
 
